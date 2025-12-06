@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <mat-card class="w-full max-w-md p-8 !rounded-xl !shadow-lg bg-white border border-slate-100">
+        <div class="flex flex-col items-center mb-8">
+            <div
+                class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 rounded-xl text-white shadow-lg shadow-blue-200 mb-4">
+                <mat-icon class="transform scale-125">dashboard</mat-icon>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight"> OCR Studio</h1>
+            <p class="text-slate-500 text-sm mt-1">Welcome Back</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="bg-red-50 text-red-600 text-sm p-3 rounded-lg flex items-center gap-2">
+                <mat-icon class="text-base text-red-500 h-4 w-4 flex items-center justify-center">error</mat-icon>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <mat-form-field class="w-full">
+                <mat-label>User name</mat-label>
+                <input matInput formControlName="username">
+                <mat-icon matPrefix class="text-slate-400 mr-2">person</mat-icon>
+                <mat-error *ngIf="loginForm.get('username')?.hasError('required')">User name is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Password</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+                <mat-icon matPrefix class="text-slate-400 mr-2">lock</mat-icon>
+                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword"
+                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword" type="button">
+                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
+            </mat-form-field>
+
+            <div class="bg-blue-50 text-blue-800 text-xs p-3 rounded-md border border-blue-100">
+                <strong>Demo Hint:</strong> Use <code>admin</code> / <code>123</code> to sign in.
+            </div>
+
+            <div class="flex items-center justify-between text-sm mt-1">
+                <mat-checkbox color="primary" class="text-slate-600">Remember me</mat-checkbox>
+                <a href="javascript:void(0)"
+                    class="text-blue-600 hover:text-blue-700 font-medium hover:underline">Forgot password?</a>
+            </div>
+
+            <button mat-flat-button color="primary" type="submit"
+                class="w-full !h-12 !text-base !rounded-lg !mt-2 shadow-md shadow-blue-100"
+                [disabled]="loginForm.invalid || isLoading">
+                <span *ngIf="!isLoading">Sign In</span>
+                <span *ngIf="isLoading" class="flex items-center gap-2">
+                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Signing in...
+                </span>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center">
+            <p class="text-slate-400 text-xs">© 2024 OCR Studio. All rights reserved.</p>
+        </div>
+    </mat-card>
+</div>

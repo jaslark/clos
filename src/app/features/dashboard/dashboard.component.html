@@ -1,0 +1,317 @@
+<div class="min-h-screen pb-12 bg-slate-50 font-sans text-slate-900">
+    <!-- Main Content -->
+    <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Filter Bar -->
+        <section
+            class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center justify-between sticky">
+            <div class="flex items-center gap-2 pl-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+                <mat-icon class="text-slate-400 mr-2">filter_list</mat-icon>
+
+                <button (click)="setDateRange('last7Days')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-all"
+                    [ngClass]="dateRange() === 'last7Days' ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-600 ring-offset-1' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'">
+                    7 Days
+                </button>
+                <button (click)="setDateRange('thisMonth')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-all"
+                    [ngClass]="dateRange() === 'thisMonth' ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-600 ring-offset-1' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'">
+                    This Month
+                </button>
+                <button (click)="setDateRange('lastMonth')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-all"
+                    [ngClass]="dateRange() === 'lastMonth' ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-600 ring-offset-1' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'">
+                    Last Month
+                </button>
+                <button (click)="setDateRange('thisYear')"
+                    class="px-4 py-2 rounded-md text-sm font-medium transition-all"
+                    [ngClass]="dateRange() === 'thisYear' ? 'bg-blue-600 text-white shadow-md ring-2 ring-blue-600 ring-offset-1' : 'bg-white text-slate-600 border border-slate-300 hover:bg-slate-50'">
+                    This Year
+                </button>
+            </div>
+
+            <div
+                class="flex items-center gap-3 w-full md:w-auto px-3 border-t md:border-t-0 md:border-l border-slate-100 pt-2 md:pt-0">
+                <div class="relative group">
+                    <select
+                        class="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-40 p-2.5 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                        [ngModel]="selectedType()" (ngModelChange)="setFilterType($event)">
+                        <option value="All">All Templates</option>
+                        @for (t of sampleTypes; track t) {
+                        <option [value]="t">{{t}}</option>
+                        }
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                        <mat-icon class="text-sm">arrow_drop_down</mat-icon>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <select
+                        class="appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-36 p-2.5 pr-8 cursor-pointer hover:bg-slate-100 transition-colors"
+                        [ngModel]="selectedStatus()" (ngModelChange)="setFilterStatus($event)">
+                        <option value="All">All Status</option>
+                        <option value="Success">Success Only</option>
+                        <option value="Failed">Failed Only</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                        <mat-icon class="text-sm">arrow_drop_down</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Total Files -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <mat-icon>description</mat-icon>
+                    </div>
+                    <div class="flex items-center text-xs font-bold px-2 py-1 rounded-full"
+                        [ngClass]="getTrend(metrics().curr.totalFiles, metrics().prev.totalFiles).direction === 'up' ? 'bg-green-100 text-green-700' : getTrend(metrics().curr.totalFiles, metrics().prev.totalFiles).direction === 'down' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'">
+                        <mat-icon class="text-[12px] h-[12px] w-[12px] mr-1 flex items-center justify-center"
+                            style="font-size: 12px; height: 12px; width: 12px;">
+                            {{ getTrend(metrics().curr.totalFiles, metrics().prev.totalFiles).direction === 'up' ?
+                            'arrow_upward' : 'arrow_downward' }}
+                        </mat-icon>
+                        {{ getTrend(metrics().curr.totalFiles, metrics().prev.totalFiles).value }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-slate-900">{{ metrics().curr.totalFiles | number }}</div>
+                    <h3 class="text-slate-500 text-sm font-medium mt-1">Total Files</h3>
+                    <div class="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
+                        {{ metrics().curr.totalPages | number }} pages processed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Rate -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <div class="flex items-center text-xs font-bold px-2 py-1 rounded-full"
+                        [ngClass]="getTrend(metrics().curr.successRate, metrics().prev.successRate).direction === 'up' ? 'bg-green-100 text-green-700' : getTrend(metrics().curr.successRate, metrics().prev.successRate).direction === 'down' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'">
+                        <mat-icon class="text-[12px] h-[12px] w-[12px] mr-1 flex items-center justify-center"
+                            style="font-size: 12px; height: 12px; width: 12px;">
+                            {{ getTrend(metrics().curr.successRate, metrics().prev.successRate).direction === 'up' ?
+                            'arrow_upward' : 'arrow_downward' }}
+                        </mat-icon>
+                        {{ getTrend(metrics().curr.successRate, metrics().prev.successRate).value }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-slate-900">{{ metrics().curr.successRate }}%</div>
+                    <h3 class="text-slate-500 text-sm font-medium mt-1">Success Rate</h3>
+                    <div class="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
+                        {{ metrics().curr.successFiles }} successful / {{ metrics().curr.failedFiles }} failed
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avg Speed -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <mat-icon>schedule</mat-icon>
+                    </div>
+                    <div class="flex items-center text-xs font-bold px-2 py-1 rounded-full"
+                        [ngClass]="getTrend(metrics().curr.avgSpeed, metrics().prev.avgSpeed, true).direction === 'up' ? 'bg-green-100 text-green-700' : getTrend(metrics().curr.avgSpeed, metrics().prev.avgSpeed, true).direction === 'down' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'">
+                        <mat-icon class="text-[12px] h-[12px] w-[12px] mr-1 flex items-center justify-center"
+                            style="font-size: 12px; height: 12px; width: 12px;">
+                            {{ getTrend(metrics().curr.avgSpeed, metrics().prev.avgSpeed, true).direction === 'up' ?
+                            'arrow_upward' : 'arrow_downward' }}
+                        </mat-icon>
+                        {{ getTrend(metrics().curr.avgSpeed, metrics().prev.avgSpeed, true).value }}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-slate-900">{{ metrics().curr.avgSpeed }}s</div>
+                    <h3 class="text-slate-500 text-sm font-medium mt-1">Avg Processing Speed</h3>
+                    <div class="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
+                        seconds per page
+                    </div>
+                </div>
+            </div>
+
+            <!-- License Usage -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 relative overflow-hidden"
+                [ngClass]="metrics().license.warning ? 'border-red-300 bg-red-50' : ''">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="p-3 rounded-lg flex items-center justify-center"
+                        [ngClass]="metrics().license.warning ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'">
+                        <mat-icon>credit_card</mat-icon>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold"
+                        [ngClass]="metrics().license.warning ? 'text-red-900' : 'text-slate-900'">
+                        {{ metrics().license.usedPercent | number:'1.1-1' }}%
+                    </div>
+                    <h3 class="text-slate-500 text-sm font-medium mt-1">License Usage (YTD)</h3>
+                    <div class="text-xs text-slate-400 mt-2 pt-2 border-t border-slate-100">
+                        {{ metrics().license.total | number }} / {{ metrics().license.quota | number }} quota
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 lg:col-span-2">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">OCR Performance Trends</h3>
+                        <p class="text-sm text-slate-500">Volume vs. Success Rate vs. Speed over time</p>
+                    </div>
+                </div>
+                <div class="h-80 w-full">
+                    <!-- NGX Charts Implementation -->
+                    <!-- Note: ngx-charts doesn't support composed charts exactly like Recharts. 
+                We'll use a grouped vertical bar chart or line chart, or a combo if available.
+                For now, let's use a Line Chart for trends as it's cleaner for multiple metrics. -->
+                    <ngx-charts-line-chart [scheme]="colorScheme" [results]="chartData()" [gradient]="false"
+                        [xAxis]="true" [yAxis]="true" [legend]="true" [showXAxisLabel]="false" [showYAxisLabel]="false"
+                        [xAxisLabel]="'Date'" [yAxisLabel]="'Value'" [autoScale]="true">
+                    </ngx-charts-line-chart>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5 lg:col-span-1">
+                <div class="mb-4">
+                    <h3 class="font-bold text-slate-800 text-lg">Performance Clustering</h3>
+                    <p class="text-sm text-slate-500">Templates grouped by Avg Speed</p>
+                </div>
+                <div class="space-y-4 overflow-y-auto max-h-80 pr-2 custom-scrollbar">
+                    @for (cluster of performanceClusters(); track cluster.type) {
+                    <div
+                        class="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg flex items-center justify-center"
+                                [ngClass]="cluster.avgSpeed > 8 ? 'bg-red-100 text-red-700' : cluster.avgSpeed > 5 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'">
+                                <mat-icon class="text-sm" style="font-size: 16px; height: 16px; width: 16px;">
+                                    {{ cluster.avgSpeed > 8 ? 'hourglass_empty' : cluster.avgSpeed > 5 ? 'speed' :
+                                    'bolt' }}
+                                </mat-icon>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-slate-700 text-sm">{{ cluster.type }}</div>
+                                <div class="text-xs text-slate-500">{{ cluster.count }} files</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-slate-800">{{ cluster.avgSpeed | number:'1.2-2' }}s</div>
+                            <div class="text-xs font-medium"
+                                [ngClass]="cluster.successRate >= 80 ? 'text-green-600' : 'text-red-500'">
+                                {{ cluster.successRate | number:'1.1-1' }}% Acc
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Breakdown Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
+            <!-- Top Error Files -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                        <mat-icon class="text-red-500">error_outline</mat-icon>
+                        Recent Failed OCR Files
+                    </h3>
+                    <span class="text-xs font-medium bg-red-100 text-red-600 px-2 py-1 rounded-full">{{
+                        failedFiles().length }} files</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="px-3 py-3">Filename / Type</th>
+                                <th class="px-3 py-3">Time</th>
+                                <th class="px-3 py-3 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @if (failedFiles().length === 0) {
+                            <tr>
+                                <td colspan="3" class="p-8 text-center text-slate-400">No failed files in this period.
+                                    Great job!</td>
+                            </tr>
+                            } @else {
+                            @for (file of failedFiles(); track file.id) {
+                            <tr class="hover:bg-slate-50 transition-colors group">
+                                <td class="px-3 py-3">
+                                    <div class="font-medium text-slate-700 truncate max-w-[200px]"
+                                        [title]="file.filename">{{ file.filename }}</div>
+                                    <div class="text-xs text-slate-400">{{ file.typeocr }}</div>
+                                </td>
+                                <td class="px-3 py-3 text-slate-500 whitespace-nowrap text-xs">
+                                    {{ file.uploadtime | date:'shortDate' }}<br>
+                                    {{ file.uploadtime | date:'shortTime' }}
+                                </td>
+                                <td class="px-3 py-3 text-right">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        Code {{ file.statusocr }}
+                                    </span>
+                                </td>
+                            </tr>
+                            }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Slowest Files -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                        <mat-icon class="text-orange-500">schedule</mat-icon>
+                        Top 10 Slowest Files
+                    </h3>
+                    <span class="text-xs font-medium bg-orange-100 text-orange-600 px-2 py-1 rounded-full">By Total
+                        Time</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                            <tr>
+                                <th class="px-3 py-3">Filename / Type</th>
+                                <th class="px-3 py-3 text-center">Pages</th>
+                                <th class="px-3 py-3 text-right">Total Time</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @for (file of slowFiles(); track file.id) {
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-3 py-3">
+                                    <div class="font-medium text-slate-700 truncate max-w-[200px]"
+                                        [title]="file.filename">{{ file.filename }}</div>
+                                    <div class="text-xs text-slate-400">{{ file.typeocr }}</div>
+                                </td>
+                                <td class="px-3 py-3 text-center text-slate-600">
+                                    {{ file.pagecount }}
+                                </td>
+                                <td class="px-3 py-3 text-right">
+                                    <div class="font-bold text-slate-700">{{ file.timeocr }}s</div>
+                                    <div class="text-xs text-slate-400">{{ (file.timeocr / file.pagecount) |
+                                        number:'1.1-1' }}s / page</div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>

@@ -1,0 +1,101 @@
+<mat-sidenav-container class="sidenav-container bg-slate-50">
+
+    <!-- Sidebar -->
+    <mat-sidenav mode="side" opened class="app-sidenav border-r border-slate-200 bg-white shadow-sm"
+        [class.collapsed-sidebar]="collapsed()">
+
+        <!-- Header / Logo -->
+        <div class="h-16 flex items-center px-4 border-b border-slate-100 overflow-hidden whitespace-nowrap">
+            <div
+                class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-lg text-white shadow-lg shadow-blue-200 flex items-center justify-center">
+                <mat-icon>dashboard</mat-icon>
+            </div>
+            <span class="ml-3 font-bold text-xl text-slate-800 tracking-tight transition-opacity duration-300"
+                [class.opacity-0]="collapsed()" [class.hidden]="collapsed()">
+                OCR Studio
+            </span>
+        </div>
+
+        <!-- Navigation -->
+        <mat-nav-list class="pt-4 px-2 space-y-1">
+            <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link"
+                class="rounded-lg transition-all duration-200 hover:bg-slate-50 group mb-1">
+                <mat-icon matListItemIcon
+                    class="text-slate-400 group-hover:text-blue-600 transition-colors">dashboard</mat-icon>
+                <span matListItemTitle class="text-slate-600 font-medium group-hover:text-slate-900"
+                    [class.hidden]="collapsed()">Dashboard</span>
+            </a>
+
+            <a mat-list-item routerLink="/upload" routerLinkActive="active-link"
+                class="rounded-lg transition-all duration-200 hover:bg-slate-50 group mb-1">
+                <mat-icon matListItemIcon
+                    class="text-slate-400 group-hover:text-blue-600 transition-colors">cloud_upload</mat-icon>
+                <span matListItemTitle class="text-slate-600 font-medium group-hover:text-slate-900"
+                    [class.hidden]="collapsed()">Upload</span>
+            </a>
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <!-- Content Wrapper -->
+    <mat-sidenav-content class="content-wrapper bg-slate-50">
+
+        <mat-toolbar
+            class="header-toolbar border-b border-slate-200 px-4 sm:px-6 lg:px-8 flex justify-between items-center !bg-white z-20 sticky top-0 shadow-sm h-16">
+            <div class="flex items-center">
+                <button mat-icon-button (click)="toggleSidebar()"
+                    class="mr-2 text-slate-500 hover:text-blue-600 transition-colors">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <!-- Breadcrumb placeholder -->
+                <!-- Breadcrumb placeholder -->
+                <div class="hidden md:flex items-center text-sm font-medium text-slate-500 ml-2">
+                    <span class="hover:text-slate-800 cursor-pointer">Home</span>
+
+                    <ng-container *ngFor="let crumb of breadcrumbs()">
+                        <mat-icon class="text-slate-300 mx-1 text-xs h-4 w-4 flex items-center justify-center"
+                            style="font-size: 16px;">chevron_right</mat-icon>
+                        <span class="text-slate-800">{{ crumb }}</span>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button mat-icon-button class="text-slate-400 hover:text-blue-600 transition-colors">
+                    <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+                </button>
+                <div class="h-8 w-[1px] bg-slate-200 mx-1"></div>
+
+                <div [matMenuTriggerFor]="userMenu"
+                    class="flex items-center gap-3 cursor-pointer p-1.5 rounded-full hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User"
+                        class="w-8 h-8 rounded-full shadow-sm ring-2 ring-white group-hover:ring-blue-100 transition-all">
+                    <span class="text-sm font-semibold text-slate-700 hidden sm:block pr-2">Administrator</span>
+                    <mat-icon
+                        class="text-slate-400 text-sm h-4 w-4 flex items-center justify-center">expand_more</mat-icon>
+                </div>
+
+                <mat-menu #userMenu="matMenu" xPosition="before" class="!mt-2 !rounded-lg !shadow-lg">
+                    <button mat-menu-item>
+                        <mat-icon>person</mat-icon>
+                        <span>Profile</span>
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>settings</mat-icon>
+                        <span>Settings</span>
+                    </button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="logout()" class="!text-red-600">
+                        <mat-icon class="!text-red-600">logout</mat-icon>
+                        <span>Sign out</span>
+                    </button>
+                </mat-menu>
+            </div>
+        </mat-toolbar>
+
+        <!-- Scrollable Body -->
+        <div class="main-content bg-slate-50 p-6">
+            <router-outlet></router-outlet>
+        </div>
+
+    </mat-sidenav-content>
+</mat-sidenav-container>

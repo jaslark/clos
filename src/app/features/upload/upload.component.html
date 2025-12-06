@@ -1,0 +1,109 @@
+<div class="max-w-[1600px] mx-auto flex flex-col lg:flex-row gap-6 h-[calc(100vh-140px)]">
+
+    <!-- Left Panel: Upload / Image View -->
+    <div class="w-full lg:w-1/2 flex flex-col gap-4">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                <mat-icon class="text-sm w-5 h-5 flex items-center justify-center">description</mat-icon>
+                Upload Image
+            </div>
+            <button mat-icon-button *ngIf="file" (click)="file = null"
+                class="text-slate-400 hover:text-red-500 transition-colors">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+
+        <div class="flex-1 bg-white rounded-xl shadow-sm border-2 border-dashed flex flex-col items-center justify-center p-8 transition-all duration-200 relative group"
+            [class.border-blue-500]="isDragging" [class.bg-blue-50]="isDragging" [class.border-slate-300]="!isDragging"
+            [class.hover:border-blue-400]="!isDragging" [class.hover:bg-slate-50]="!isDragging"
+            (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+            <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept=".pdf,image/*">
+
+            <ng-container *ngIf="!file; else filePreview">
+                <div
+                    class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <mat-icon class="w-10 h-10 text-blue-600 !text-4xl flex items-center justify-center"
+                        style="font-size: 40px; width: 40px; height: 40px;">cloud_upload</mat-icon>
+                </div>
+                <h3 class="text-slate-800 font-bold text-lg mb-2">Drop File Here</h3>
+                <p class="text-slate-400 text-sm mb-6">Support PDF, JPG, PNG</p>
+                <button mat-flat-button color="primary" class="!rounded-full !px-8 !py-2" (click)="fileInput.click()">
+                    Browse Files
+                </button>
+            </ng-container>
+
+            <ng-template #filePreview>
+                <div class="text-center">
+                    <div
+                        class="w-24 h-24 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4 border border-slate-200">
+                        <mat-icon class="text-slate-400 !text-5xl flex items-center justify-center"
+                            style="font-size: 48px; width: 48px; height: 48px;">insert_drive_file</mat-icon>
+                    </div>
+                    <p class="font-bold text-slate-800 text-lg mb-1">{{ file?.name }}</p>
+                    <p class="text-sm text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full inline-block">
+                        {{ (file?.size || 0) / 1024 / 1024 | number:'1.2-2' }} MB
+                    </p>
+                </div>
+            </ng-template>
+
+            <div *ngIf="isProcessing"
+                class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
+                <mat-spinner diameter="48" class="mb-4"></mat-spinner>
+                <p class="text-slate-600 font-medium animate-pulse">Processing Document...</p>
+            </div>
+        </div>
+
+        <button mat-flat-button color="primary"
+            class="w-full !h-12 !text-base !rounded-xl shadow-lg shadow-blue-200 transition-transform active:scale-[0.98]"
+            [disabled]="!file || isProcessing" (click)="parseDocument()">
+            <div class="flex items-center justify-center gap-2">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>Parse Document</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div class="w-full lg:w-1/2 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
+        <mat-tab-group class="flex-1" animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <div class="flex items-center gap-2 px-2">
+                        <mat-icon class="text-sm">preview</mat-icon>
+                        <span>Preview</span>
+                    </div>
+                </ng-template>
+                <div class="p-8 text-slate-400 text-center mt-20 flex flex-col items-center" *ngIf="!isProcessing">
+                    <mat-icon class="text-6xl text-slate-200 mb-4"
+                        style="font-size: 64px; width: 64px; height: 64px;">image_search</mat-icon>
+                    <p>Upload a document to see the preview here.</p>
+                </div>
+            </mat-tab>
+
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <div class="flex items-center gap-2 px-2">
+                        <mat-icon class="text-sm">analytics</mat-icon>
+                        <span>Visualization</span>
+                    </div>
+                </ng-template>
+                <div class="p-8 text-slate-400 text-center mt-20">
+                    Visualization content will appear here.
+                </div>
+            </mat-tab>
+
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <div class="flex items-center gap-2 px-2">
+                        <mat-icon class="text-sm">code</mat-icon>
+                        <span>Markdown</span>
+                    </div>
+                </ng-template>
+                <div class="p-8 text-slate-400 text-center mt-20">
+                    Markdown source will appear here.
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+</div>
